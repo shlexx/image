@@ -1,11 +1,12 @@
 <!-- yes i cant code for shit i obviously used ai -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Image Bypasser</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect x='32' y='128' width='448' height='320' rx='40' ry='40' fill='%238faeff'/%3E%3Crect x='160' y='48' width='192' height='48' rx='12' ry='12' fill='%238faeff'/%3E%3Ccircle cx='256' cy='288' r='96' fill='%230a0c10'/%3E%3Ccircle cx='256' cy='288' r='64' fill='%238faeff'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3Cmask id='lens'%3E%3Crect width='512' height='512' fill='white'/%3E%3Ccircle cx='256' cy='288' r='60' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='32' y='128' width='448' height='320' rx='40' ry='40' fill='%238faeff' mask='url(%23lens)'/%3E%3Crect x='160' y='48' width='192' height='48' rx='12' ry='12' fill='%238faeff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     * {
@@ -162,7 +163,7 @@
       flex: 1;
       padding: 0.4rem 0.6rem;
       border-radius: 9px;
-      border: none;
+      border: 1px solid transparent;
       background: transparent;
       color: var(--text2);
       font-size: 0.75rem;
@@ -216,6 +217,65 @@
       min-width: 42px;
       text-align: right;
       color: var(--accent);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .toggle-label {
+      font-size: 0.8rem;
+      color: var(--text2);
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border2);
+      transition: 0.2s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--text);
+      transition: 0.2s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--accent);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(20px);
     }
 
     .drop {
@@ -444,6 +504,13 @@
         <span class="slider-val" id="opa-val">75%</span>
       </div>
     </div>
+    <div class="toggle-row">
+      <span class="toggle-label"><i class="fas fa-adjust"></i>  Invert overlay (colors)</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="invertToggle" onchange="invertChange()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
   </div>
 
   <div class="section">
@@ -504,6 +571,7 @@
   let singleFile = null;
   let bulkFiles = [];
   let overlayCache = {};
+  let invertOverlay = false;
 
   function setOrient(val) {
     orient = val;
@@ -516,6 +584,11 @@
   function opaChange() {
     const val = document.getElementById('opa').value;
     document.getElementById('opa-val').textContent = val + '%';
+    if (singleFile) renderPreview();
+  }
+
+  function invertChange() {
+    invertOverlay = document.getElementById('invertToggle').checked;
     if (singleFile) renderPreview();
   }
 
@@ -564,7 +637,14 @@
     
     const overlay = await loadOverlay(overlaySrc);
     if (overlay) {
-      ctx.drawImage(overlay, 0, 0, targetW, targetH);
+      if (invertOverlay) {
+        ctx.save();
+        ctx.filter = 'invert(1)';
+        ctx.drawImage(overlay, 0, 0, targetW, targetH);
+        ctx.restore();
+      } else {
+        ctx.drawImage(overlay, 0, 0, targetW, targetH);
+      }
     }
     
     bitmap.close();
