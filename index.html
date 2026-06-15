@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Image B᠌yp᠌a᠌ss᠌er᠌ · Resize & Composite</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect x='32' y='128' width='448' height='320' rx='32' ry='32' fill='%238faeff'/%3E%3Crect x='160' y='48' width='192' height='48' rx='8' fill='%238faeff'/%3E%3Ccircle cx='256' cy='288' r='96' fill='%230a0c10'/%3E%3Ccircle cx='256' cy='288' r='64' fill='%238faeff'/%3E%3C/svg%3E">
+  <title>Image Bypasser</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect x='32' y='128' width='448' height='320' rx='40' ry='40' fill='%238faeff'/%3E%3Crect x='160' y='48' width='192' height='48' rx='12' ry='12' fill='%238faeff'/%3E%3Ccircle cx='256' cy='288' r='96' fill='%230a0c10'/%3E%3Ccircle cx='256' cy='288' r='64' fill='%238faeff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     * {
@@ -24,14 +24,11 @@
       --text2: #9aa6b9;
       --text3: #5f6b7a;
       --accent: #8faeff;
-      --accent-glow: #6d8eff;
       --accent-bg: rgba(110, 135, 210, 0.12);
       --btn-bg: #1f242e;
-      --btn-hover: #2c3440;
       --success: #7ddea5;
       --danger: #ff7b72;
       --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      --font-mono: 'SF Mono', 'Fira Code', monospace;
     }
 
     @media (prefers-color-scheme: light) {
@@ -90,7 +87,6 @@
     .app-title {
       font-size: 1.4rem;
       font-weight: 600;
-      color: var(--text);
     }
 
     .app-sub {
@@ -322,7 +318,8 @@
     }
 
     .btn.primary:hover {
-      background: var(--accent-glow);
+      background: var(--accent);
+      opacity: 0.85;
     }
 
     .btn:disabled {
@@ -416,8 +413,8 @@
   <div class="app-header">
     <div class="logo"><i class="fas fa-magic"></i></div>
     <div>
-      <div class="app-title">Image ᠌By᠌pas᠌se᠌r</div>
-      <div class="app-sub">Resize, composite &amp; export · pixel precise</div>
+      <div class="app-title">Image Bypasser</div>
+      <div class="app-sub">Resize, composite &amp; export</div>
     </div>
   </div>
 
@@ -696,7 +693,6 @@
     document.getElementById('status2').textContent = '';
   }
 
-  // Setup drag & drop
   function setupDrop(dropId, inputId, onFiles) {
     const el = document.getElementById(dropId);
     const input = document.getElementById(inputId);
