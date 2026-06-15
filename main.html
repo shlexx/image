@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Image ᠌B᠌yp᠌as᠌se᠌r · Resize & Composite</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --app-bg: #0a0c10;
+      --surface: #13161c;
+      --surface2: #1a1e26;
+      --border: rgba(255, 255, 255, 0.06);
+      --border2: rgba(255, 255, 255, 0.12);
+      --text: #eceff4;
+      --text2: #9aa6b9;
+      --text3: #5f6b7a;
+      --accent: #8faeff;
+      --accent-glow: #6d8eff;
+      --accent-bg: rgba(110, 135, 210, 0.12);
+      --btn-bg: #1f242e;
+      --btn-hover: #2c3440;
+      --success: #7ddea5;
+      --danger: #ff7b72;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --app-bg: #f4f6fb;
+        --surface: #ffffff;
+        --surface2: #f8fafd;
+        --border: rgba(0, 0, 0, 0.06);
+        --border2: rgba(0, 0, 0, 0.1);
+        --text: #1e293b;
+        --text2: #475569;
+        --text3: #8d9aae;
+        --accent: #4c6ef5;
+        --accent-bg: #eef3ff;
+        --btn-bg: #f0f2f5;
+        --success: #2e7d64;
+        --danger: #d1453b;
+      }
+    }
+
+    body {
+      background: var(--app-bg);
+      font-family: var(--font-sans);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .app {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 1.8rem 1.2rem 3rem;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      background: var(--accent-bg);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 24px;
+    }
+
+    .app-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .app-sub {
+      font-size: 0.75rem;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--accent-bg);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .section-sub {
+      font-size: 0.7rem;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text2);
+      min-width: 72px;
+    }
+
+    .seg {
+      display: flex;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .seg-btn {
+      flex: 1;
+      padding: 0.4rem 0.6rem;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--text2);
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .seg-btn i {
+      font-size: 0.85rem;
+    }
+
+    .seg-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border2);
+    }
+
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      flex: 1;
+      height: 4px;
+      background: var(--border2);
+      border-radius: 4px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    .slider-val {
+      font-size: 0.85rem;
+      font-weight: 600;
+      min-width: 42px;
+      text-align: right;
+      color: var(--accent);
+    }
+
+    .drop {
+      border: 1.5px dashed var(--border2);
+      border-radius: 18px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      background: var(--surface2);
+    }
+
+    .drop:hover,
+    .drop.over {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+
+    .drop i {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text3);
+    }
+
+    .drop:hover i {
+      color: var(--accent);
+    }
+
+    .drop p {
+      font-size: 0.8rem;
+      color: var(--text2);
+    }
+
+    .drop small {
+      font-size: 0.65rem;
+      color: var(--text3);
+      margin-top: 6px;
+      display: block;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .preview-wrap {
+      margin-top: 1rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border2);
+      display: none;
+    }
+
+    .preview-wrap canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.65rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.5rem 1.1rem;
+      border-radius: 40px;
+      border: 1px solid var(--border2);
+      background: var(--btn-bg);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.18s ease;
+    }
+
+    .btn i {
+      font-size: 0.85rem;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #0a0c10;
+      border-color: transparent;
+    }
+
+    @media (prefers-color-scheme: light) {
+      .btn.primary { color: #fff; }
+    }
+
+    .btn.primary:hover {
+      background: var(--accent-glow);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .thumb-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1rem;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .thumb {
+      position: relative;
+      width: 72px;
+    }
+
+    .thumb canvas {
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .thumb .rm {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 20px;
+      height: 20px;
+      border-radius: 30px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .thumb .rm:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .thumb .lbl {
+      font-size: 9px;
+      color: var(--text3);
+      margin-top: 5px;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .prog-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 4px;
+      margin-top: 1rem;
+      overflow: hidden;
+      display: none;
+    }
+
+    .prog-fill {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width 0.2s;
+    }
+
+    .status {
+      font-size: 0.7rem;
+      color: var(--text2);
+      margin-top: 0.6rem;
+    }
+
+    .status.ok {
+      color: var(--success);
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="app-header">
+    <div class="logo"><i class="fas fa-magic"></i></div>
+    <div>
+      <div class="app-title">Image By᠌pas᠌se᠌r</div>
+      <div class="app-sub">Resize, composite &amp; export · pixel precise</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon"><i class="fas fa-sliders-h"></i></div>
+      <div>
+        <div class="section-title">Settings</div>
+        <div class="section-sub">Global overlay & orientation</div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="label">Orientation</span>
+      <div class="seg">
+        <button class="seg-btn active" data-v="landscape" onclick="setOrient('landscape')">
+          <i class="fas fa-arrows-alt-h"></i> Landscape · 1024×100
+        </button>
+        <button class="seg-btn" data-v="portrait" onclick="setOrient('portrait')">
+          <i class="fas fa-arrows-alt-v"></i> Portrait · 100×1024
+        </button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="label">Overlay opacity</span>
+      <div class="slider-wrap">
+        <input type="range" id="opa" min="0" max="100" value="75" step="1" oninput="opaChange()">
+        <span class="slider-val" id="opa-val">75%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon"><i class="fas fa-image"></i></div>
+      <div>
+        <div class="section-title">Single file</div>
+        <div class="section-sub">Live preview with overlay</div>
+      </div>
+    </div>
+    <div class="drop" id="drop1" onclick="document.getElementById('f1').click()">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <p>Click or drag an image here</p>
+      <small>PNG, JPG, WEBP, GIF …</small>
+    </div>
+    <input type="file" id="f1" accept="image/*">
+    <div class="preview-wrap" id="preview-wrap">
+      <canvas id="preview-canvas"></canvas>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" id="btn-conv" disabled onclick="convertSingle()">
+        <i class="fas fa-download"></i> Convert &amp; download
+      </button>
+    </div>
+    <div class="status" id="status1"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon"><i class="fas fa-layer-group"></i></div>
+      <div>
+        <div class="section-title">Bulk mode</div>
+        <div class="section-sub">Batch process + queue</div>
+      </div>
+    </div>
+    <div class="drop" id="drop2" onclick="document.getElementById('f2').click()">
+      <i class="fas fa-images"></i>
+      <p>Drag multiple images (adds to list)</p>
+      <small>Accumulative · up to many files</small>
+    </div>
+    <input type="file" id="f2" accept="image/*" multiple>
+    <div class="thumb-grid" id="thumb-grid"></div>
+    <div class="prog-bar" id="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="btn-row">
+      <button class="btn primary" id="btn-bulk" disabled onclick="convertBulk()">
+        <i class="fas fa-download"></i> Convert all
+      </button>
+      <button class="btn" id="btn-clear" disabled onclick="clearBulk()">
+        <i class="fas fa-trash-alt"></i> Clear list
+      </button>
+    </div>
+    <div class="status" id="status2"></div>
+  </div>
+</div>
+
+<script>
+  let orient = 'landscape';
+  let singleFile = null;
+  let bulkFiles = [];
+  let overlayCache = {};
+
+  function setOrient(val) {
+    orient = val;
+    document.querySelectorAll('.seg-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-v') === val);
+    });
+    if (singleFile) renderPreview();
+  }
+
+  function opaChange() {
+    const val = document.getElementById('opa').value;
+    document.getElementById('opa-val').textContent = val + '%';
+    if (singleFile) renderPreview();
+  }
+
+  function getDims() {
+    return orient === 'landscape' ? [1024, 100] : [100, 1024];
+  }
+
+  function getOverlaySrc() {
+    return orient === 'landscape' ? 'p2.png' : 'p.png';
+  }
+
+  function getOpacity() {
+    return parseInt(document.getElementById('opa').value, 10) / 100;
+  }
+
+  function loadOverlay(src) {
+    if (overlayCache[src]) return Promise.resolve(overlayCache[src]);
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        overlayCache[src] = img;
+        resolve(img);
+      };
+      img.onerror = () => {
+        console.warn('Overlay not found:', src);
+        resolve(null);
+      };
+      img.src = src;
+    });
+  }
+
+  async function processImage(file) {
+    const [targetW, targetH] = getDims();
+    const opacity = getOpacity();
+    const overlaySrc = getOverlaySrc();
+    
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.globalAlpha = opacity;
+    ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+    ctx.globalAlpha = 1;
+    
+    const overlay = await loadOverlay(overlaySrc);
+    if (overlay) {
+      ctx.drawImage(overlay, 0, 0, targetW, targetH);
+    }
+    
+    bitmap.close();
+    return canvas;
+  }
+
+  async function renderPreview() {
+    if (!singleFile) {
+      document.getElementById('preview-wrap').style.display = 'none';
+      return;
+    }
+    try {
+      const result = await processImage(singleFile);
+      const pc = document.getElementById('preview-canvas');
+      pc.width = result.width;
+      pc.height = result.height;
+      pc.getContext('2d').drawImage(result, 0, 0);
+      document.getElementById('preview-wrap').style.display = 'block';
+    } catch (err) {
+      document.getElementById('status1').textContent = 'Preview error: ' + err.message;
+    }
+  }
+
+  async function convertSingle() {
+    if (!singleFile) return;
+    const st = document.getElementById('status1');
+    st.textContent = 'Processing...';
+    try {
+      const canvas = await processImage(singleFile);
+      const name = singleFile.name.replace(/\.[^.]+$/, '') + '_converted.png';
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = name;
+      a.click();
+      st.textContent = '✓ Saved: ' + name;
+      st.className = 'status ok';
+    } catch (err) {
+      st.textContent = '✗ Error: ' + err.message;
+    }
+  }
+
+  function renderThumbs() {
+    const grid = document.getElementById('thumb-grid');
+    grid.innerHTML = '';
+    if (bulkFiles.length === 0) {
+      document.getElementById('btn-bulk').disabled = true;
+      document.getElementById('btn-clear').disabled = true;
+      return;
+    }
+    
+    bulkFiles.forEach((file, idx) => {
+      const div = document.createElement('div');
+      div.className = 'thumb';
+      const canvas = document.createElement('canvas');
+      canvas.width = 72;
+      canvas.height = 72;
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, 72, 72);
+        URL.revokeObjectURL(img.src);
+      };
+      img.src = URL.createObjectURL(file);
+      
+      const rm = document.createElement('div');
+      rm.className = 'rm';
+      rm.innerHTML = '<i class="fas fa-times"></i>';
+      rm.onclick = () => {
+        bulkFiles.splice(idx, 1);
+        renderThumbs();
+      };
+      
+      const lbl = document.createElement('div');
+      lbl.className = 'lbl';
+      lbl.textContent = file.name.length > 18 ? file.name.slice(0, 15) + '…' : file.name;
+      
+      div.appendChild(canvas);
+      div.appendChild(rm);
+      div.appendChild(lbl);
+      grid.appendChild(div);
+    });
+    
+    document.getElementById('btn-bulk').disabled = false;
+    document.getElementById('btn-clear').disabled = false;
+  }
+
+  async function convertBulk() {
+    if (!bulkFiles.length) return;
+    const progBar = document.getElementById('prog-bar');
+    const progFill = document.getElementById('prog-fill');
+    const st = document.getElementById('status2');
+    
+    progBar.style.display = 'block';
+    progFill.style.width = '0%';
+    document.getElementById('btn-bulk').disabled = true;
+    document.getElementById('btn-clear').disabled = true;
+    
+    let success = 0;
+    for (let i = 0; i < bulkFiles.length; i++) {
+      st.textContent = 'Converting ' + (i+1) + ' of ' + bulkFiles.length + '...';
+      try {
+        const canvas = await processImage(bulkFiles[i]);
+        const name = bulkFiles[i].name.replace(/\.[^.]+$/, '') + '_converted.png';
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = name;
+        a.click();
+        success++;
+      } catch (err) {
+        console.warn(err);
+      }
+      progFill.style.width = ((i + 1) / bulkFiles.length * 100) + '%';
+      await new Promise(r => setTimeout(r, 50));
+    }
+    
+    st.textContent = '✓ Done — ' + success + ' of ' + bulkFiles.length + ' files downloaded.';
+    st.className = 'status ok';
+    document.getElementById('btn-bulk').disabled = false;
+    document.getElementById('btn-clear').disabled = false;
+  }
+
+  function clearBulk() {
+    bulkFiles = [];
+    renderThumbs();
+    document.getElementById('prog-bar').style.display = 'none';
+    document.getElementById('status2').textContent = '';
+  }
+
+  // Setup drag & drop
+  function setupDrop(dropId, inputId, onFiles) {
+    const el = document.getElementById(dropId);
+    const input = document.getElementById(inputId);
+    
+    el.addEventListener('dragover', e => {
+      e.preventDefault();
+      el.classList.add('over');
+    });
+    el.addEventListener('dragleave', () => el.classList.remove('over'));
+    el.addEventListener('drop', e => {
+      e.preventDefault();
+      el.classList.remove('over');
+      onFiles(Array.from(e.dataTransfer.files));
+    });
+    input.addEventListener('change', e => {
+      if (e.target.files.length) {
+        onFiles(Array.from(e.target.files));
+        input.value = '';
+      }
+    });
+  }
+
+  setupDrop('drop1', 'f1', files => {
+    if (!files.length) return;
+    singleFile = files[0];
+    document.getElementById('btn-conv').disabled = false;
+    renderPreview();
+  });
+
+  setupDrop('drop2', 'f2', files => {
+    if (!files.length) return;
+    bulkFiles.push(...files);
+    renderThumbs();
+    document.getElementById('status2').textContent = '📁 ' + bulkFiles.length + ' image(s) in queue.';
+  });
+</script>
+</body>
+</html>
