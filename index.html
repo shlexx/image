@@ -502,7 +502,7 @@
         <i class="fas fa-image"></i> Mode 1 · p/p2
       </button>
       <button class="mode-btn" data-mode="2" onclick="setMode(2)">
-        <i class="fas fa-palette"></i> Mode 2 · p3/p4 + noise
+        <i class="fas fa-palette"></i> Mode 2 · Overlay + noise
       </button>
     </div>
 
@@ -560,14 +560,14 @@
         </div>
       </div>
       <div class="row">
-        <span class="label">p3/p4 opacity</span>
+        <span class="label">Overlay opacity</span>
         <div class="slider-wrap">
           <input type="range" id="opa2" min="0" max="100" value="75" step="1" oninput="opaChange()">
           <span class="slider-val" id="opa-val2">75%</span>
         </div>
       </div>
       <div class="toggle-row">
-        <span class="toggle-label"><i class="fas fa-adjust"></i>  Invert p3/p4 (colors)</span>
+        <span class="toggle-label"><i class="fas fa-adjust"></i>  Invert overlay (colors)</span>
         <label class="toggle-switch">
           <input type="checkbox" id="invertToggle2" onchange="invertChange()">
           <span class="toggle-slider"></span>
@@ -760,10 +760,9 @@
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
       if (Math.random() < amount) {
-        const noise = (Math.random() - 0.5) * 255;
-        data[i] = Math.min(255, Math.max(0, data[i] + noise));
-        data[i+1] = Math.min(255, Math.max(0, data[i+1] + noise));
-        data[i+2] = Math.min(255, Math.max(0, data[i+2] + noise));
+        data[i] = Math.random() * 255;
+        data[i+1] = Math.random() * 255;
+        data[i+2] = Math.random() * 255;
       }
     }
     ctx.putImageData(imageData, 0, 0);
