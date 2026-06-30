@@ -560,6 +560,13 @@
         </div>
       </div>
       <div class="row">
+        <span class="label">Noise intensity</span>
+        <div class="slider-wrap">
+          <input type="range" id="noiseIntensity" min="0" max="100" value="50" step="1" oninput="noiseIntensityChange()">
+          <span class="slider-val" id="noise-intensity-val">50%</span>
+        </div>
+      </div>
+      <div class="row">
         <span class="label">Overlay opacity</span>
         <div class="slider-wrap">
           <input type="range" id="opa2" min="0" max="100" value="20" step="1" oninput="opaChange()">
@@ -693,6 +700,12 @@
     if (singleFile) renderPreview();
   }
 
+  function noiseIntensityChange() {
+    const val = document.getElementById('noiseIntensity').value;
+    document.getElementById('noise-intensity-val').textContent = val + '%';
+    if (singleFile) renderPreview();
+  }
+
   function invertChange() {
     invertOverlay = document.getElementById('invertToggle').checked;
     invertOverlay2 = document.getElementById('invertToggle2').checked;
@@ -735,6 +748,10 @@
     return parseInt(document.getElementById('noiseAmount').value, 10) / 100;
   }
 
+  function getNoiseIntensity() {
+    return parseInt(document.getElementById('noiseIntensity').value, 10) / 100;
+  }
+
   function getInvert() {
     return mode === 1 ? invertOverlay : invertOverlay2;
   }
@@ -755,14 +772,17 @@
     });
   }
 
-  function addNoise(ctx, width, height, amount) {
+  // Paint.NET style colorful noise with amount + intensity
+  function addNoise(ctx, width, height, amount, intensity) {
     const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
+    const maxNoise = intensity * 2.55; // 0-255
     for (let i = 0; i < data.length; i += 4) {
       if (Math.random() < amount) {
-        data[i] = Math.random() * 255;
-        data[i+1] = Math.random() * 255;
-        data[i+2] = Math.random() * 255;
+        // Independent RGB noise - colorful!
+        data[i] = Math.min(255, Math.max(0, data[i] + (Math.random() - 0.5) * maxNoise * 2));
+        data[i+1] = Math.min(255, Math.max(0, data[i+1] + (Math.random() - 0.5) * maxNoise * 2));
+        data[i+2] = Math.min(255, Math.max(0, data[i+2] + (Math.random() - 0.5) * maxNoise * 2));
       }
     }
     ctx.putImageData(imageData, 0, 0);
@@ -774,6 +794,7 @@
     const overlayOpacity = getOverlayOpacity();
     const overlaySrc = getOverlaySrc();
     const noiseAmount = getNoiseAmount();
+    const noiseIntensity = getNoiseIntensity();
     const invert = getInvert();
     
     const bitmap = await createImageBitmap(file);
@@ -800,8 +821,8 @@
     ctx.globalAlpha = 1;
     
     // Apply noise (Mode 2 only)
-    if (mode === 2 && noiseAmount > 0) {
-      addNoise(ctx, targetW, targetH, noiseAmount);
+    if (mode === 2 && noiseAmount > 0 && noiseIntensity > 0) {
+      addNoise(ctx, targetW, targetH, noiseAmount, noiseIntensity);
     }
     
     // Apply overlay
