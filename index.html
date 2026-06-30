@@ -499,7 +499,7 @@
     <!-- Mode Selector -->
     <div class="mode-selector">
       <button class="mode-btn active" data-mode="1" onclick="setMode(1)">
-        <i class="fas fa-image"></i> Mode 1 · p/p2
+        <i class="fas fa-image"></i> Mode 1 · Full opacity overlay
       </button>
       <button class="mode-btn" data-mode="2" onclick="setMode(2)">
         <i class="fas fa-palette"></i> Mode 2 · Overlay + noise
@@ -530,8 +530,8 @@
       <div class="row">
         <span class="label">Overlay opacity</span>
         <div class="slider-wrap">
-          <input type="range" id="opa" min="0" max="100" value="75" step="1" oninput="opaChange()">
-          <span class="slider-val" id="opa-val">75%</span>
+          <input type="range" id="opa" min="0" max="100" value="100" step="1" oninput="opaChange()">
+          <span class="slider-val" id="opa-val">100%</span>
         </div>
       </div>
       <div class="toggle-row">
