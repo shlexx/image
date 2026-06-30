@@ -1,5 +1,3 @@
-<!-- yes i cant code for shit i obviously used ai -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,24 +30,6 @@
       --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     }
 
-    @media (prefers-color-scheme: light) {
-      :root {
-        --app-bg: #f4f6fb;
-        --surface: #ffffff;
-        --surface2: #f8fafd;
-        --border: rgba(0, 0, 0, 0.06);
-        --border2: rgba(0, 0, 0, 0.1);
-        --text: #1e293b;
-        --text2: #475569;
-        --text3: #8d9aae;
-        --accent: #4c6ef5;
-        --accent-bg: #eef3ff;
-        --btn-bg: #f0f2f5;
-        --success: #2e7d64;
-        --danger: #d1453b;
-      }
-    }
-
     body {
       background: var(--app-bg);
       font-family: var(--font-sans);
@@ -59,7 +39,7 @@
     }
 
     .app {
-      max-width: 680px;
+      max-width: 720px;
       margin: 0 auto;
       padding: 1.8rem 1.2rem 3rem;
     }
@@ -132,6 +112,37 @@
       font-size: 0.7rem;
       color: var(--text2);
       margin-top: 2px;
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text2);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.18s ease;
+      text-align: center;
+    }
+
+    .mode-btn.active {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .mode-btn:hover {
+      border-color: var(--text2);
     }
 
     .row {
@@ -373,10 +384,6 @@
       border-color: transparent;
     }
 
-    @media (prefers-color-scheme: light) {
-      .btn.primary { color: #fff; }
-    }
-
     .btn.primary:hover {
       background: var(--accent);
       opacity: 0.85;
@@ -408,6 +415,7 @@
       object-fit: cover;
       border-radius: 12px;
       border: 1px solid var(--border);
+      image-rendering: auto;
     }
 
     .thumb .rm {
@@ -424,6 +432,7 @@
       align-items: center;
       justify-content: center;
       font-size: 10px;
+      z-index: 10;
     }
 
     .thumb .rm:hover {
@@ -486,30 +495,84 @@
         <div class="section-sub">Global overlay & orientation</div>
       </div>
     </div>
+
+    <!-- Mode Selector -->
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="1" onclick="setMode(1)">
+        <i class="fas fa-image"></i> Mode 1 · p/p2
+      </button>
+      <button class="mode-btn" data-mode="2" onclick="setMode(2)">
+        <i class="fas fa-palette"></i> Mode 2 · p3/p4 + noise
+      </button>
+    </div>
+
     <div class="row">
       <span class="label">Orientation</span>
       <div class="seg">
         <button class="seg-btn active" data-v="landscape" onclick="setOrient('landscape')">
-          <i class="fas fa-arrows-alt-h"></i> Landscape · 1024×100
+          <i class="fas fa-arrows-alt-h"></i> <span id="orient-label-land">1024×100</span>
         </button>
         <button class="seg-btn" data-v="portrait" onclick="setOrient('portrait')">
-          <i class="fas fa-arrows-alt-v"></i> Portrait · 100×1024
+          <i class="fas fa-arrows-alt-v"></i> <span id="orient-label-port">100×1024</span>
         </button>
       </div>
     </div>
-    <div class="row">
-      <span class="label">Overlay opacity</span>
-      <div class="slider-wrap">
-        <input type="range" id="opa" min="0" max="100" value="75" step="1" oninput="opaChange()">
-        <span class="slider-val" id="opa-val">75%</span>
+
+    <!-- Mode 1 sliders -->
+    <div id="mode1-sliders">
+      <div class="row">
+        <span class="label">Main opacity</span>
+        <div class="slider-wrap">
+          <input type="range" id="mainOpa" min="0" max="100" value="75" step="1" oninput="mainOpaChange()">
+          <span class="slider-val" id="main-opa-val">75%</span>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Overlay opacity</span>
+        <div class="slider-wrap">
+          <input type="range" id="opa" min="0" max="100" value="75" step="1" oninput="opaChange()">
+          <span class="slider-val" id="opa-val">75%</span>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label"><i class="fas fa-adjust"></i>  Invert overlay (colors)</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="invertToggle" onchange="invertChange()">
+          <span class="toggle-slider"></span>
+        </label>
       </div>
     </div>
-    <div class="toggle-row">
-      <span class="toggle-label"><i class="fas fa-adjust"></i>  Invert overlay (colors)</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="invertToggle" onchange="invertChange()">
-        <span class="toggle-slider"></span>
-      </label>
+
+    <!-- Mode 2 sliders -->
+    <div id="mode2-sliders" style="display:none;">
+      <div class="row">
+        <span class="label">Main opacity</span>
+        <div class="slider-wrap">
+          <input type="range" id="mainOpa2" min="0" max="100" value="75" step="1" oninput="mainOpaChange()">
+          <span class="slider-val" id="main-opa-val2">75%</span>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">Noise amount</span>
+        <div class="slider-wrap">
+          <input type="range" id="noiseAmount" min="0" max="100" value="30" step="1" oninput="noiseChange()">
+          <span class="slider-val" id="noise-val">30%</span>
+        </div>
+      </div>
+      <div class="row">
+        <span class="label">p3/p4 opacity</span>
+        <div class="slider-wrap">
+          <input type="range" id="opa2" min="0" max="100" value="75" step="1" oninput="opaChange()">
+          <span class="slider-val" id="opa-val2">75%</span>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label"><i class="fas fa-adjust"></i>  Invert p3/p4 (colors)</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="invertToggle2" onchange="invertChange()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
     </div>
   </div>
 
@@ -567,41 +630,113 @@
 </div>
 
 <script>
+  let mode = 1;
   let orient = 'landscape';
   let singleFile = null;
   let bulkFiles = [];
   let overlayCache = {};
   let invertOverlay = false;
+  let invertOverlay2 = false;
+
+  // --- Mode & orientation functions ---
+  function setMode(val) {
+    mode = val;
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.getAttribute('data-mode')) === val);
+    });
+    document.getElementById('mode1-sliders').style.display = val === 1 ? 'block' : 'none';
+    document.getElementById('mode2-sliders').style.display = val === 2 ? 'block' : 'none';
+    updateOrientLabels();
+    if (singleFile) renderPreview();
+  }
 
   function setOrient(val) {
     orient = val;
     document.querySelectorAll('.seg-btn').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-v') === val);
     });
+    updateOrientLabels();
+    if (singleFile) renderPreview();
+  }
+
+  function updateOrientLabels() {
+    const landLabel = document.getElementById('orient-label-land');
+    const portLabel = document.getElementById('orient-label-port');
+    if (mode === 1) {
+      landLabel.textContent = '1024×100';
+      portLabel.textContent = '100×1024';
+    } else {
+      landLabel.textContent = '1024×50';
+      portLabel.textContent = '50×1024';
+    }
+  }
+
+  function mainOpaChange() {
+    const val1 = document.getElementById('mainOpa').value;
+    document.getElementById('main-opa-val').textContent = val1 + '%';
+    const val2 = document.getElementById('mainOpa2').value;
+    document.getElementById('main-opa-val2').textContent = val2 + '%';
     if (singleFile) renderPreview();
   }
 
   function opaChange() {
     const val = document.getElementById('opa').value;
     document.getElementById('opa-val').textContent = val + '%';
+    const val2 = document.getElementById('opa2').value;
+    document.getElementById('opa-val2').textContent = val2 + '%';
+    if (singleFile) renderPreview();
+  }
+
+  function noiseChange() {
+    const val = document.getElementById('noiseAmount').value;
+    document.getElementById('noise-val').textContent = val + '%';
     if (singleFile) renderPreview();
   }
 
   function invertChange() {
     invertOverlay = document.getElementById('invertToggle').checked;
+    invertOverlay2 = document.getElementById('invertToggle2').checked;
     if (singleFile) renderPreview();
   }
 
   function getDims() {
-    return orient === 'landscape' ? [1024, 100] : [100, 1024];
+    if (mode === 1) {
+      return orient === 'landscape' ? [1024, 100] : [100, 1024];
+    } else {
+      return orient === 'landscape' ? [1024, 50] : [50, 1024];
+    }
   }
 
   function getOverlaySrc() {
-    return orient === 'landscape' ? 'p2.png' : 'p.png';
+    if (mode === 1) {
+      return orient === 'landscape' ? 'p2.png' : 'p.png';
+    } else {
+      return orient === 'landscape' ? 'p4.png' : 'p3.png';
+    }
   }
 
-  function getOpacity() {
-    return parseInt(document.getElementById('opa').value, 10) / 100;
+  function getMainOpacity() {
+    if (mode === 1) {
+      return parseInt(document.getElementById('mainOpa').value, 10) / 100;
+    } else {
+      return parseInt(document.getElementById('mainOpa2').value, 10) / 100;
+    }
+  }
+
+  function getOverlayOpacity() {
+    if (mode === 1) {
+      return parseInt(document.getElementById('opa').value, 10) / 100;
+    } else {
+      return parseInt(document.getElementById('opa2').value, 10) / 100;
+    }
+  }
+
+  function getNoiseAmount() {
+    return parseInt(document.getElementById('noiseAmount').value, 10) / 100;
+  }
+
+  function getInvert() {
+    return mode === 1 ? invertOverlay : invertOverlay2;
   }
 
   function loadOverlay(src) {
@@ -620,24 +755,61 @@
     });
   }
 
+  function addNoise(ctx, width, height, amount) {
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      if (Math.random() < amount) {
+        const noise = (Math.random() - 0.5) * 255;
+        data[i] = Math.min(255, Math.max(0, data[i] + noise));
+        data[i+1] = Math.min(255, Math.max(0, data[i+1] + noise));
+        data[i+2] = Math.min(255, Math.max(0, data[i+2] + noise));
+      }
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }
+
   async function processImage(file) {
     const [targetW, targetH] = getDims();
-    const opacity = getOpacity();
+    const mainOpacity = getMainOpacity();
+    const overlayOpacity = getOverlayOpacity();
     const overlaySrc = getOverlaySrc();
+    const noiseAmount = getNoiseAmount();
+    const invert = getInvert();
     
     const bitmap = await createImageBitmap(file);
+    
+    const intermediateW = targetW * 2;
+    const intermediateH = targetH * 2;
+    const intermediateCanvas = document.createElement('canvas');
+    intermediateCanvas.width = intermediateW;
+    intermediateCanvas.height = intermediateH;
+    const interCtx = intermediateCanvas.getContext('2d');
+    interCtx.imageSmoothingEnabled = true;
+    interCtx.imageSmoothingQuality = 'high';
+    interCtx.drawImage(bitmap, 0, 0, intermediateW, intermediateH);
+    
     const canvas = document.createElement('canvas');
     canvas.width = targetW;
     canvas.height = targetH;
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     
-    ctx.globalAlpha = opacity;
-    ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+    ctx.globalAlpha = mainOpacity;
+    ctx.drawImage(intermediateCanvas, 0, 0, targetW, targetH);
     ctx.globalAlpha = 1;
     
+    // Apply noise (Mode 2 only)
+    if (mode === 2 && noiseAmount > 0) {
+      addNoise(ctx, targetW, targetH, noiseAmount);
+    }
+    
+    // Apply overlay
     const overlay = await loadOverlay(overlaySrc);
     if (overlay) {
-      if (invertOverlay) {
+      ctx.globalAlpha = overlayOpacity;
+      if (invert) {
         ctx.save();
         ctx.filter = 'invert(1)';
         ctx.drawImage(overlay, 0, 0, targetW, targetH);
@@ -645,6 +817,7 @@
       } else {
         ctx.drawImage(overlay, 0, 0, targetW, targetH);
       }
+      ctx.globalAlpha = 1;
     }
     
     bitmap.close();
@@ -689,9 +862,11 @@
   function renderThumbs() {
     const grid = document.getElementById('thumb-grid');
     grid.innerHTML = '';
+    const st = document.getElementById('status2');
     if (bulkFiles.length === 0) {
       document.getElementById('btn-bulk').disabled = true;
       document.getElementById('btn-clear').disabled = true;
+      st.textContent = '';
       return;
     }
     
@@ -699,12 +874,32 @@
       const div = document.createElement('div');
       div.className = 'thumb';
       const canvas = document.createElement('canvas');
-      canvas.width = 72;
-      canvas.height = 72;
+      canvas.width = 256;
+      canvas.height = 256;
+      canvas.style.width = '72px';
+      canvas.style.height = '72px';
       const ctx = canvas.getContext('2d');
       const img = new Image();
       img.onload = () => {
-        ctx.drawImage(img, 0, 0, 72, 72);
+        const tempCanvas1 = document.createElement('canvas');
+        tempCanvas1.width = 1024;
+        tempCanvas1.height = 1024;
+        const tempCtx1 = tempCanvas1.getContext('2d');
+        tempCtx1.imageSmoothingEnabled = true;
+        tempCtx1.imageSmoothingQuality = 'high';
+        tempCtx1.drawImage(img, 0, 0, 1024, 1024);
+        
+        const tempCanvas2 = document.createElement('canvas');
+        tempCanvas2.width = 512;
+        tempCanvas2.height = 512;
+        const tempCtx2 = tempCanvas2.getContext('2d');
+        tempCtx2.imageSmoothingEnabled = true;
+        tempCtx2.imageSmoothingQuality = 'high';
+        tempCtx2.drawImage(tempCanvas1, 0, 0, 512, 512);
+        
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(tempCanvas2, 0, 0, 256, 256);
         URL.revokeObjectURL(img.src);
       };
       img.src = URL.createObjectURL(file);
@@ -712,7 +907,8 @@
       const rm = document.createElement('div');
       rm.className = 'rm';
       rm.innerHTML = '<i class="fas fa-times"></i>';
-      rm.onclick = () => {
+      rm.onclick = (e) => {
+        e.stopPropagation();
         bulkFiles.splice(idx, 1);
         renderThumbs();
       };
@@ -727,6 +923,7 @@
       grid.appendChild(div);
     });
     
+    st.textContent = '📁 ' + bulkFiles.length + ' image(s) in queue.';
     document.getElementById('btn-bulk').disabled = false;
     document.getElementById('btn-clear').disabled = false;
   }
@@ -770,7 +967,9 @@
     bulkFiles = [];
     renderThumbs();
     document.getElementById('prog-bar').style.display = 'none';
-    document.getElementById('status2').textContent = '';
+    const st = document.getElementById('status2');
+    st.textContent = '';
+    st.className = 'status';
   }
 
   function setupDrop(dropId, inputId, onFiles) {
@@ -806,8 +1005,10 @@
     if (!files.length) return;
     bulkFiles.push(...files);
     renderThumbs();
-    document.getElementById('status2').textContent = '📁 ' + bulkFiles.length + ' image(s) in queue.';
   });
+
+  // Init orientation labels
+  updateOrientLabels();
 </script>
 </body>
 </html>
